@@ -1,10 +1,16 @@
 package com.example.retailer.entity;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "TRANSACTION")
+@Slf4j
 public class Transaction {
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
@@ -20,6 +26,15 @@ public class Transaction {
     @Column(name = "AMOUNT")
     private double transactionAmount;
 
+    public Transaction() {
+    }
+
+    public Transaction(Long transactionId, Long customerId, Timestamp transactionDate, double transactionAmount) {
+        this.transactionId = transactionId;
+        this.customerId = customerId;
+        this.transactionDate = transactionDate;
+        this.transactionAmount = transactionAmount;
+    }
 
     public Long getTransactionId() {
         return transactionId;

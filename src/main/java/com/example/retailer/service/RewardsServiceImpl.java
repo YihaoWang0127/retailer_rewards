@@ -4,6 +4,7 @@ import com.example.retailer.entity.Rewards;
 import com.example.retailer.entity.Transaction;
 import com.example.retailer.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -18,10 +19,15 @@ public class RewardsServiceImpl implements RewardsService{
     @Autowired
     TransactionRepository transactionRepository;
 
-    //Set the strategy value
-    final int oneMonthDuration = 30;
-    final int firstRewardThreshold = 50;
-    final int secondRewardThreshold = 100;
+    //load the strategy value from properties file
+    @Value("${oneMonthDuration}")
+    int oneMonthDuration;
+
+    @Value("${firstRewardThreshold}")
+    int firstRewardThreshold;
+
+    @Value("${secondRewardThreshold}")
+    int secondRewardThreshold;
 
     @Override
     public Rewards getRewardsByCustomerId(Long customerId) {
@@ -37,12 +43,12 @@ public class RewardsServiceImpl implements RewardsService{
         List<Transaction> lastTwoMonthTransactions =
                 transactionRepository.findAllByCustomerIdAndTransactionDateBetween(customerId, lastSecondMonthTimestamp, lastMonthTimestamp);
         List<Transaction> lastThreeMonthTransactions =
-                transactionRepository.findAllByCustomerIdAndTransactionDateBetween(customerId, lastThirdMonthTimestamp, lastSecondMonthTimestamp);;
+                transactionRepository.findAllByCustomerIdAndTransactionDateBetween(customerId, lastThirdMonthTimestamp, lastSecondMonthTimestamp);
 
         //Calculate the rewards per month for last three month
-        Long lastMonthRewardPoints = RewardsCalculator(lastOneMonthTransactions);
-        Long lastSecondMonthRewardPoints = RewardsCalculator(lastTwoMonthTransactions);
-        Long lastThirdMonthRewardPoints = RewardsCalculator(lastThreeMonthTransactions);
+        Long lastMonthRewardPoints = getRewards(lastOneMonthTransactions);
+        Long lastSecondMonthRewardPoints = getRewards(lastTwoMonthTransactions);
+        Long lastThirdMonthRewardPoints = getRewards(lastThreeMonthTransactions);
 
         Rewards customerRewards = new Rewards();
         customerRewards.setCustomerId(customerId);
@@ -59,12 +65,12 @@ public class RewardsServiceImpl implements RewardsService{
         return Timestamp.valueOf(LocalDateTime.now().minusDays(days));
     }
 
-    private Long RewardsCalculator(List<Transaction> transactions){
-        return transactions.stream().map(transaction -> RewardsCalculatorHelper(transaction))
+    private Long getRewards(List<Transaction> transactions){
+        return transactions.stream().map(transaction -> calculate(transaction))
                 .collect(Collectors.summingLong(r -> r.longValue()));
     }
 
-    private Long RewardsCalculatorHelper(Transaction t) {
+    private Long calculate(Transaction t) {
         if (t.getTransactionAmount() > firstRewardThreshold && t.getTransactionAmount() <= secondRewardThreshold) {
             return Math.round(t.getTransactionAmount() - firstRewardThreshold);
         } else if (t.getTransactionAmount() > secondRewardThreshold) {

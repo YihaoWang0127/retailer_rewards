@@ -13,4 +13,23 @@ public class Customer {
     @Column(name = "CUSTOMER_NAME")
     private String customerName;
 
+    public Customer() {
+    }
+
+    public Customer(Long customerId, String customerName) {
+        this.customerId = customerId;
+        this.customerName = customerName;
+    }
+
+    public Customer(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
 }

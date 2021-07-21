@@ -24,3 +24,8 @@ In this project, we catch the user not found exception.
 
 4. In repository layer, we extends CrudRepository to handle the basic query for us in H2 DB.
 
+#Unit Test
+1. Since we use gradle, so may meet issue test cases were not received
+   In IntelliJ IDE, Go to File -> Settings ->Build,Execution, Deployment -> Build Tools -> Gradle 
+   here in the Run test using: dropdown selected option was: Gradle(default) changed it to IntelliJ IDEA
+

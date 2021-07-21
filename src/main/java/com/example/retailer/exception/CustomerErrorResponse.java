@@ -1,4 +1,4 @@
-package com.example.retailer.rest;
+package com.example.retailer.exception;
 
 public class CustomerErrorResponse {
 

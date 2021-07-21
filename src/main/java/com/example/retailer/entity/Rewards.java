@@ -1,5 +1,10 @@
 package com.example.retailer.entity;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 public class Rewards {
 
     private long customerId;
@@ -47,5 +52,4 @@ public class Rewards {
     public void setTotalRewards(long totalRewards) {
         this.totalRewards = totalRewards;
     }
-
 }

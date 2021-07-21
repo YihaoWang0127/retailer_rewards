@@ -2,8 +2,11 @@ package com.example.retailer.rest;
 
 import com.example.retailer.entity.Customer;
 import com.example.retailer.entity.Rewards;
+import com.example.retailer.exception.CustomerNotFoundException;
 import com.example.retailer.repository.CustomerRepository;
 import com.example.retailer.service.RewardsService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/customers")
 public class RewardsRestController {
 
+    private static final Logger logger = LogManager.getLogger(RewardsRestController.class);
+
     @Autowired
     RewardsService rewardsService;
 
@@ -25,12 +30,17 @@ public class RewardsRestController {
     @GetMapping(value = "/{customerId}/rewards")
     public ResponseEntity<Rewards> getRewardsByCustomerId(@PathVariable("customerId") Long customerId){
 
+        logger.info("The start time of request from customer with id: " + customerId);
+
         Customer customer = customerRepository.findByCustomerId(customerId);
         if(customer == null)
         {
             throw new CustomerNotFoundException("customer id not found - " + customerId);
         }
         Rewards customerRewards = rewardsService.getRewardsByCustomerId(customerId);
+
+        logger.info("The end time of request from customer with id: " + customerId);
+
         return new ResponseEntity<>(customerRewards, HttpStatus.OK);
 
     }
